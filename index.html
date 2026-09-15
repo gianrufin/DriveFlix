@@ -23,7 +23,7 @@
       overflow-x: hidden;
     }
 
-    /* Header & Navigation */
+    /* Header */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -36,39 +36,11 @@
       z-index: 20;
     }
 
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 30px;
-    }
-
-    .logo {
-      color: var(--red);
-      font-size: 1.8rem;
-      font-weight: 900;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      user-select: none;
-    }
-
-    .nav-tabs {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-    }
-
-    .nav-tab {
-      color: #e5e5e5;
-      font-size: 0.9rem;
-      cursor: pointer;
-      opacity: 0.7;
-      transition: opacity 0.2s;
-    }
-
-    .nav-tab:hover, .nav-tab.active {
-      opacity: 1;
-      font-weight: 600;
-    }
+    .nav-left { display: flex; align-items: center; gap: 30px; }
+    .logo { color: var(--red); font-size: 1.8rem; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; user-select: none; }
+    .nav-tabs { display: flex; gap: 20px; list-style: none; }
+    .nav-tab { color: #e5e5e5; font-size: 0.9rem; cursor: pointer; opacity: 0.7; transition: opacity 0.2s; }
+    .nav-tab:hover, .nav-tab.active { opacity: 1; font-weight: 600; }
 
     .search-input {
       background: rgba(0, 0, 0, 0.75);
@@ -81,12 +53,7 @@
       width: 220px;
       transition: width 0.3s ease;
     }
-
-    .search-input:focus {
-      width: 300px;
-      border-color: #fff;
-      background: rgba(0, 0, 0, 0.95);
-    }
+    .search-input:focus { width: 300px; border-color: #fff; background: rgba(0, 0, 0, 0.95); }
 
     /* Shuffle Hero Banner */
     .hero {
@@ -99,167 +66,78 @@
       align-items: flex-end;
       padding: 0 4% 60px;
     }
-
     .hero-overlay {
-      position: absolute;
-      inset: 0;
+      position: absolute; inset: 0;
       background: linear-gradient(180deg, rgba(20,20,20,0.3) 0%, rgba(20,20,20,0.8) 70%, #141414 100%),
                   linear-gradient(90deg, rgba(20,20,20,0.9) 0%, rgba(20,20,20,0.4) 50%, transparent 100%);
     }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 600px;
-    }
-
-    .hero-title {
-      font-size: 2.8rem;
-      font-weight: 800;
-      margin-bottom: 12px;
-      line-height: 1.1;
-    }
-
+    .hero-content { position: relative; z-index: 2; max-width: 600px; }
+    .hero-title { font-size: 2.8rem; font-weight: 800; margin-bottom: 12px; line-height: 1.1; }
     .hero-plot {
-      font-size: 0.95rem;
-      color: #d2d2d2;
-      line-height: 1.4;
-      margin-bottom: 20px;
-      display: -webkit-box;
-      -webkit-line-clamp: 3;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
+      font-size: 0.95rem; color: #d2d2d2; line-height: 1.4; margin-bottom: 20px;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
     }
-
     .hero-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: #fff;
-      color: #000;
-      font-weight: 700;
-      font-size: 1rem;
-      padding: 10px 24px;
-      border-radius: 4px;
-      border: none;
-      cursor: pointer;
-      transition: background 0.2s;
+      display: inline-flex; align-items: center; gap: 8px; background: #fff; color: #000;
+      font-weight: 700; font-size: 1rem; padding: 10px 24px; border-radius: 4px; border: none; cursor: pointer;
     }
 
-    .hero-btn:hover { background: #e6e6e6; }
-
-    /* Categories & Grids */
+    /* Grid Layout */
     main { padding: 0 4% 60px; }
-
-    .category-section {
-      margin-bottom: 35px;
-    }
-
-    .category-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-      margin-bottom: 12px;
-      color: #e5e5e5;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-      gap: 14px;
-    }
-
+    .category-section { margin-bottom: 35px; }
+    .category-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 12px; color: #e5e5e5; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 14px; }
     .card {
-      background: var(--card-bg);
-      border-radius: 4px;
-      aspect-ratio: 2 / 3;
-      position: relative;
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.25s cubic-bezier(0.33, 1, 0.68, 1);
-      border: 1px solid rgba(255, 255, 255, 0.05);
+      background: var(--card-bg); border-radius: 4px; aspect-ratio: 2 / 3; position: relative;
+      overflow: hidden; cursor: pointer; transition: transform 0.25s ease; border: 1px solid rgba(255, 255, 255, 0.05);
     }
-
-    .card:hover {
-      transform: scale(1.05);
-      box-shadow: 0 10px 20px rgba(0,0,0,0.8);
-      z-index: 2;
-    }
-
-    .poster-img {
-      width: 100%; height: 100%;
-      object-fit: cover; display: block;
-      background: #2a2a2a;
-    }
-
+    .card:hover { transform: scale(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.8); z-index: 2; }
+    .poster-img { width: 100%; height: 100%; object-fit: cover; display: block; background: #2a2a2a; }
     .card-info {
       position: absolute; inset: 0;
       background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
-      display: flex; flex-direction: column;
-      justify-content: flex-end; padding: 12px;
+      display: flex; flex-direction: column; justify-content: flex-end; padding: 12px;
     }
-
     .card-title { font-size: 0.9rem; font-weight: 700; line-height: 1.2; }
     .card-year { font-size: 0.75rem; color: var(--muted); margin-top: 4px; }
     .status { color: var(--muted); padding: 40px 0; }
 
     /* Detail Modal */
     .modal-overlay {
-      display: none; position: fixed; inset: 0;
-      background: rgba(0, 0, 0, 0.85); z-index: 100;
-      align-items: center; justify-content: center; padding: 20px;
+      display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.85);
+      z-index: 100; align-items: center; justify-content: center; padding: 20px;
     }
     .modal-overlay.active { display: flex; }
-
     .detail-card {
-      background: #181818; width: 100%; max-width: 850px;
-      border-radius: 8px; overflow: hidden; position: relative;
-      display: flex; flex-direction: column; max-height: 90vh;
+      background: #181818; width: 100%; max-width: 850px; border-radius: 8px;
+      overflow: hidden; position: relative; display: flex; flex-direction: column; max-height: 90vh;
     }
-
-    .close-btn {
-      position: absolute; top: 15px; right: 20px;
-      font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10;
-    }
-
-    .detail-hero {
-      display: flex; gap: 24px; padding: 30px;
-      background: linear-gradient(180deg, rgba(24,24,24,0.4) 0%, #181818 100%);
-      overflow-y: auto;
-    }
-
-    .detail-poster {
-      width: 200px; border-radius: 6px; aspect-ratio: 2/3;
-      object-fit: cover; flex-shrink: 0;
-    }
-
+    .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.8rem; color: #fff; cursor: pointer; z-index: 10; }
+    .detail-hero { display: flex; gap: 24px; padding: 30px; background: linear-gradient(180deg, rgba(24,24,24,0.4) 0%, #181818 100%); overflow-y: auto; }
+    .detail-poster { width: 200px; border-radius: 6px; aspect-ratio: 2/3; object-fit: cover; flex-shrink: 0; }
     .detail-body { display: flex; flex-direction: column; gap: 12px; }
     .detail-title { font-size: 1.8rem; font-weight: 800; }
     .detail-meta { display: flex; gap: 12px; font-size: 0.9rem; color: var(--muted); }
     .badge { background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 3px; color: #fff; }
-
     .ratings { display: flex; gap: 16px; font-size: 0.9rem; }
     .rating-score { color: var(--accent); font-weight: 700; }
-
     .action-btn {
-      display: inline-flex; align-items: center; justify-content: center;
-      gap: 8px; background: #fff; color: #000; font-weight: 700;
-      padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; width: fit-content;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      background: #fff; color: #000; font-weight: 700; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; width: fit-content;
     }
-
     .synopsis { font-size: 0.95rem; line-height: 1.5; color: #d2d2d2; }
     .credits { font-size: 0.85rem; color: var(--muted); line-height: 1.6; }
     .credits span { color: #fff; }
 
-    /* Video Player Overlay */
-    .player-overlay {
-      display: none; position: fixed; inset: 0; background: #000; z-index: 200;
-    }
+    /* Player Overlay */
+    .player-overlay { display: none; position: fixed; inset: 0; background: #000; z-index: 200; }
     .player-overlay.active { display: block; }
     .player-close {
-      position: absolute; top: 20px; left: 20px; font-size: 1.2rem;
-      color: #fff; cursor: pointer; z-index: 201; background: rgba(0,0,0,0.6);
-      padding: 8px 16px; border-radius: 4px;
+      position: absolute; top: 20px; left: 20px; font-size: 1.2rem; color: #fff;
+      cursor: pointer; z-index: 201; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 4px;
     }
+    video { width: 100%; height: 100%; outline: none; }
+    ::cue { background: rgba(0,0,0,0.8); color: #fff; font-size: 1rem; }
   </style>
 </head>
 <body>
@@ -276,7 +154,6 @@
     <input type="text" id="search-input" class="search-input" placeholder="Search titles..." oninput="handleSearch()" />
   </header>
 
-  <!-- Shuffle Hero Banner -->
   <div class="hero" id="hero-banner">
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -292,7 +169,6 @@
     </div>
   </main>
 
-  <!-- Detail Modal -->
   <div class="modal-overlay" id="detail-modal">
     <div class="detail-card">
       <span class="close-btn" onclick="closeDetailModal()">&times;</span>
@@ -320,15 +196,13 @@
     </div>
   </div>
 
-  <!-- Player -->
   <div class="player-overlay" id="player-modal"></div>
 
   <script>
-    const API_KEY = "AIzaSyD1lUnWikkKMZ2TSs6WIeQDtTSladOFBhs";
+     const API_KEY = "AIzaSyD1lUnWikkKMZ2TSs6WIeQDtTSladOFBhs";
     const FOLDER_ID = "17obTR3RAAeF4nLTNWpIKb_bpxfQCUvRc";
     const OMDB_API_KEY = "trilogy";
 
-    // Manual title & year overrides for difficult file names
     const MANUAL_OVERRIDES = {
       "I Swear": { searchTitle: "I Swear", year: "2024" },
       "A.Big.Bold": { searchTitle: "A Big Bold Beautiful Journey", year: "2025" }
@@ -339,13 +213,9 @@
     let currentActiveMovie = null;
 
     function parseFilename(rawName) {
-      // Check manual overrides first
       for (const [key, override] of Object.entries(MANUAL_OVERRIDES)) {
-        if (rawName.includes(key)) {
-          return override;
-        }
+        if (rawName.includes(key)) return override;
       }
-
       let clean = rawName.replace(/\.[^/.]+$/, "");
       const yearMatch = clean.match(/\b(19\d\d|20\d\d)\b/);
       let year = yearMatch ? yearMatch[0] : "";
@@ -382,38 +252,73 @@
             rt: rtRating ? rtRating.Value : "N/A"
           };
         }
-      } catch (e) {
-        console.warn("OMDb fetch failed:", searchTitle);
-      }
+      } catch (e) { console.warn("OMDb fetch failed:", searchTitle); }
       return null;
     }
 
     async function loadDriveFlix() {
       const container = document.getElementById('categories-container');
-      const url = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${API_KEY}`;
+      
+      // Step 1: List items in root folder (checking for subfolders and direct files)
+      const rootUrl = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${API_KEY}`;
 
       try {
-        const res = await fetch(url);
+        const res = await fetch(rootUrl);
         const data = await res.json();
 
         if (!data.files || data.files.length === 0) {
-          container.innerHTML = `<div class="status">No media files found in folder.</div>`;
+          container.innerHTML = `<div class="status">No items found in folder.</div>`;
           return;
         }
 
-        moviesStore = data.files
-          .filter(file => file.mimeType !== 'application/vnd.google-apps.folder')
-          .map(file => {
-            const parsed = parseFilename(file.name);
-            return {
-              id: file.id,
-              rawName: file.name,
+        const moviesList = [];
+
+        for (const item of data.files) {
+          if (item.mimeType === 'application/vnd.google-apps.folder') {
+            // Step 2: Query files inside each subfolder for video & subtitle files
+            const subUrl = `https://www.googleapis.com/drive/v3/files?q='${item.id}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${API_KEY}`;
+            const subRes = await fetch(subUrl);
+            const subData = await subRes.json();
+
+            let videoFile = null;
+            let subFile = null;
+
+            if (subData.files) {
+              subData.files.forEach(f => {
+                if (f.mimeType.startsWith('video/') || f.name.match(/\.(mp4|mkv|webm|avi|mov)$/i)) {
+                  videoFile = f;
+                } else if (f.name.match(/\.(srt|vtt)$/i)) {
+                  subFile = f;
+                }
+              });
+            }
+
+            if (videoFile) {
+              const parsed = parseFilename(item.name !== "" ? item.name : videoFile.name);
+              moviesList.push({
+                id: videoFile.id,
+                subId: subFile ? subFile.id : null,
+                rawName: item.name,
+                searchTitle: parsed.searchTitle,
+                year: parsed.year,
+                meta: null
+              });
+            }
+          } else if (item.mimeType.startsWith('video/') || item.name.match(/\.(mp4|mkv|webm|avi|mov)$/i)) {
+            // Direct video file in root folder
+            const parsed = parseFilename(item.name);
+            moviesList.push({
+              id: item.id,
+              subId: null,
+              rawName: item.name,
               searchTitle: parsed.searchTitle,
               year: parsed.year,
               meta: null
-            };
-          });
+            });
+          }
+        }
 
+        moviesStore = moviesList;
         renderCategories();
         loadMetadataInBackground();
       } catch (e) {
@@ -507,7 +412,6 @@
 
     function setupHeroShuffle() {
       if (moviesStore.length === 0) return;
-
       const randomMovie = moviesStore[Math.floor(Math.random() * moviesStore.length)];
       const meta = randomMovie.meta || {};
 
@@ -530,9 +434,7 @@
       renderCategories();
     }
 
-    function handleSearch() {
-      renderCategories();
-    }
+    function handleSearch() { renderCategories(); }
 
     function openDetailModal(movie) {
       currentActiveMovie = movie;
@@ -558,28 +460,33 @@
 
       const playBtn = document.getElementById('modal-play-btn');
       playBtn.innerText = `▶ Play`;
-      playBtn.onclick = () => playMovie(movie.id);
+      playBtn.onclick = () => playMovie(movie);
 
       document.getElementById('detail-modal').classList.add('active');
     }
 
-    function closeDetailModal() {
-      document.getElementById('detail-modal').classList.remove('active');
+    function closeDetailModal() { document.getElementById('detail-modal').classList.remove('active'); }
+
+    function playMovie(movie) {
+      closeDetailModal();
+      const playerModal = document.getElementById('player-modal');
+      const videoSrc = `https://www.googleapis.com/drive/v3/files/${movie.id}?alt=media&key=${API_KEY}`;
+      
+      let trackTag = "";
+      if (movie.subId) {
+        const subSrc = `https://www.googleapis.com/drive/v3/files/${movie.subId}?alt=media&key=${API_KEY}`;
+        trackTag = `<track label="English" kind="subtitles" srclang="en" src="${subSrc}" default>`;
+      }
+      
+      playerModal.innerHTML = `
+        <span class="player-close" onclick="closePlayer()">✕ Back</span>
+        <video controls autoplay crossorigin="anonymous">
+          <source src="${videoSrc}" type="video/mp4">
+          ${trackTag}
+        </video>
+      `;
+      playerModal.classList.add('active');
     }
-
-    // Embed Google Drive preview player (solves MKV & audio codec issues natively)
-    function playMovie(fileId) {
-  closeDetailModal();
-  const playerModal = document.getElementById('player-modal');
-
-  playerModal.innerHTML = `
-    <span class="player-close" onclick="closePlayer()">✕ Back</span>
-    <video controls autoplay style="width:100%; height:100%;">
-      <source src="https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}" type="video/mp4">
-    </video>
-  `;
-  playerModal.classList.add('active');
-}
 
     function closePlayer() {
       const playerModal = document.getElementById('player-modal');
