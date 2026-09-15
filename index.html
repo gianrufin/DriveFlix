@@ -255,7 +255,6 @@
       display: none; position: fixed; inset: 0; background: #000; z-index: 200;
     }
     .player-overlay.active { display: block; }
-    video { width: 100%; height: 100%; outline: none; }
     .player-close {
       position: absolute; top: 20px; left: 20px; font-size: 1.2rem;
       color: #fff; cursor: pointer; z-index: 201; background: rgba(0,0,0,0.6);
@@ -277,7 +276,7 @@
     <input type="text" id="search-input" class="search-input" placeholder="Search titles..." oninput="handleSearch()" />
   </header>
 
-  <!-- Dynamic Shuffle Hero Banner -->
+  <!-- Shuffle Hero Banner -->
   <div class="hero" id="hero-banner">
     <div class="hero-overlay"></div>
     <div class="hero-content">
@@ -322,21 +321,31 @@
   </div>
 
   <!-- Player -->
-  <div class="player-overlay" id="player-modal">
-    <span class="player-close" onclick="closePlayer()">✕ Back</span>
-    <video id="video-player" controls></video>
-  </div>
+  <div class="player-overlay" id="player-modal"></div>
 
   <script>
      const API_KEY = "AIzaSyD1lUnWikkKMZ2TSs6WIeQDtTSladOFBhs";
     const FOLDER_ID = "17obTR3RAAeF4nLTNWpIKb_bpxfQCUvRc";
     const OMDB_API_KEY = "trilogy";
 
+    // Manual title & year overrides for difficult file names
+    const MANUAL_OVERRIDES = {
+      "I Swear": { searchTitle: "I Swear", year: "2024" },
+      "A.Big.Bold": { searchTitle: "A Big Bold Beautiful Journey", year: "2025" }
+    };
+
     let moviesStore = [];
     let currentFilterType = "all";
     let currentActiveMovie = null;
 
     function parseFilename(rawName) {
+      // Check manual overrides first
+      for (const [key, override] of Object.entries(MANUAL_OVERRIDES)) {
+        if (rawName.includes(key)) {
+          return override;
+        }
+      }
+
       let clean = rawName.replace(/\.[^/.]+$/, "");
       const yearMatch = clean.match(/\b(19\d\d|20\d\d)\b/);
       let year = yearMatch ? yearMatch[0] : "";
@@ -361,7 +370,7 @@
           return {
             title: data.Title,
             year: data.Year,
-            type: data.Type, // 'movie' or 'series'
+            type: data.Type,
             genre: data.Genre ? data.Genre.split(', ') : ['Uncategorized'],
             poster: data.Poster !== "N/A" ? data.Poster : null,
             plot: data.Plot,
@@ -416,14 +425,12 @@
       const container = document.getElementById('categories-container');
       const searchVal = document.getElementById('search-input').value.toLowerCase();
 
-      // Filter by Type (Movie / Series)
       let filtered = moviesStore.filter(m => {
         if (currentFilterType === 'movie') return m.meta ? m.meta.type === 'movie' : true;
         if (currentFilterType === 'series') return m.meta ? m.meta.type === 'series' : false;
         return true;
       });
 
-      // Filter by Search Query
       if (searchVal) {
         filtered = filtered.filter(m => 
           m.searchTitle.toLowerCase().includes(searchVal) ||
@@ -432,11 +439,10 @@
       }
 
       if (filtered.length === 0) {
-        container.innerHTML = `<div class="status">No titles found matching criteria.</div>`;
+        container.innerHTML = `<div class="status">No titles found.</div>`;
         return;
       }
 
-      // Group titles by Genres dynamically
       const genreGroups = {};
       filtered.forEach(m => {
         const genres = (m.meta && m.meta.genre) ? m.meta.genre : ['Library'];
@@ -499,7 +505,6 @@
       setupHeroShuffle();
     }
 
-    // Set up random Shuffle Hero
     function setupHeroShuffle() {
       if (moviesStore.length === 0) return;
 
@@ -551,17 +556,10 @@
         posterElem.style.display = 'none';
       }
 
-      const savedTime = localStorage.getItem(`playback_pos_${movie.id}`);
       const playBtn = document.getElementById('modal-play-btn');
+      playBtn.innerText = `▶ Play`;
+      playBtn.onclick = () => playMovie(movie.id);
 
-      if (savedTime && parseFloat(savedTime) > 5) {
-        const mins = Math.floor(parseFloat(savedTime) / 60);
-        playBtn.innerText = `▶ Resume Play (${mins}m)`;
-      } else {
-        playBtn.innerText = `▶ Play`;
-      }
-
-      playBtn.onclick = () => playMovie(movie.id, savedTime ? parseFloat(savedTime) : 0);
       document.getElementById('detail-modal').classList.add('active');
     }
 
@@ -569,36 +567,26 @@
       document.getElementById('detail-modal').classList.remove('active');
     }
 
-    function playMovie(fileId, startTime) {
+    // Embed Google Drive preview player (solves MKV & audio codec issues natively)
+    function playMovie(fileId) {
       closeDetailModal();
       const playerModal = document.getElementById('player-modal');
-      const player = document.getElementById('video-player');
-
-      player.src = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
+      
+      playerModal.innerHTML = `
+        <span class="player-close" onclick="closePlayer()">✕ Back</span>
+        <iframe src="https://drive.google.com/file/d/${fileId}/preview" 
+                width="100%" 
+                height="100%" 
+                allow="autoplay" 
+                style="border:none;">
+        </iframe>
+      `;
       playerModal.classList.add('active');
-
-      player.onloadedmetadata = () => {
-        if (startTime > 0) player.currentTime = startTime;
-        player.play();
-      };
-
-      player.ontimeupdate = () => {
-        if (player.currentTime > 5) {
-          localStorage.setItem(`playback_pos_${fileId}`, player.currentTime);
-        }
-      };
     }
 
     function closePlayer() {
       const playerModal = document.getElementById('player-modal');
-      const player = document.getElementById('video-player');
-
-      if (currentActiveMovie && player.currentTime > 5) {
-        localStorage.setItem(`playback_pos_${currentActiveMovie.id}`, player.currentTime);
-      }
-
-      player.pause();
-      player.src = "";
+      playerModal.innerHTML = "";
       playerModal.classList.remove('active');
     }
 
