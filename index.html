@@ -11,6 +11,7 @@
       --red: #E50914;
       --text: #FFFFFF;
       --muted: #AAAAAA;
+      --accent: #46d369;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -18,10 +19,10 @@
     body {
       background-color: var(--bg);
       color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
-    /* Header & Search Bar */
+    /* Header */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -43,10 +44,6 @@
       user-select: none;
     }
 
-    .search-box {
-      position: relative;
-    }
-
     .search-input {
       background: rgba(0, 0, 0, 0.75);
       border: 1px solid rgba(255, 255, 255, 0.25);
@@ -55,19 +52,19 @@
       border-radius: 4px;
       font-size: 0.9rem;
       outline: none;
-      width: 220px;
+      width: 240px;
       transition: width 0.3s ease, border-color 0.3s ease;
     }
 
     .search-input:focus {
-      width: 300px;
+      width: 320px;
       border-color: #fff;
-      background: rgba(0, 0, 0, 0.9);
+      background: rgba(0, 0, 0, 0.95);
     }
 
     main { padding: 100px 4% 60px; }
 
-    /* Grid & Poster Cards */
+    /* Movie Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
@@ -99,23 +96,26 @@
       background: #2a2a2a;
     }
 
-    .card-overlay {
+    .card-info {
       position: absolute;
       inset: 0;
-      background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+      background: linear-gradient(0deg, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.3) 50%, transparent 100%);
       display: flex;
-      align-items: flex-end;
-      padding: 14px;
-      opacity: 0.9;
-      transition: opacity 0.2s ease;
+      flex-direction: column;
+      justify-content: flex-end;
+      padding: 12px;
     }
 
     .card-title {
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       font-weight: 700;
       line-height: 1.2;
-      color: #fff;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    }
+
+    .card-year {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-top: 4px;
     }
 
     .status {
@@ -124,90 +124,265 @@
       padding: 40px 0;
     }
 
-    /* Video Player Modal */
-    .modal {
+    /* Netflix / HBO Detail Modal */
+    .modal-overlay {
       display: none;
       position: fixed;
       inset: 0;
-      background: rgba(0, 0, 0, 0.95);
+      background: rgba(0, 0, 0, 0.85);
       z-index: 100;
       align-items: center;
       justify-content: center;
+      padding: 20px;
     }
 
-    .modal.active { display: flex; }
+    .modal-overlay.active { display: flex; }
 
-    .modal-box {
-      width: 90%;
-      max-width: 1100px;
-      aspect-ratio: 16 / 9;
-      background: #000;
+    .detail-card {
+      background: #181818;
+      width: 100%;
+      max-width: 850px;
+      border-radius: 8px;
+      overflow: hidden;
       position: relative;
+      box-shadow: 0 0 30px rgba(0,0,0,0.9);
+      display: flex;
+      flex-direction: column;
+      max-height: 90vh;
     }
+
+    .close-btn {
+      position: absolute;
+      top: 15px; right: 20px;
+      font-size: 1.8rem;
+      color: #fff;
+      cursor: pointer;
+      z-index: 10;
+      line-height: 1;
+      opacity: 0.7;
+    }
+    .close-btn:hover { opacity: 1; }
+
+    .detail-hero {
+      display: flex;
+      gap: 24px;
+      padding: 30px;
+      background: linear-gradient(180deg, rgba(24,24,24,0.4) 0%, #181818 100%);
+      overflow-y: auto;
+    }
+
+    .detail-poster {
+      width: 200px;
+      border-radius: 6px;
+      aspect-ratio: 2/3;
+      object-fit: cover;
+      flex-shrink: 0;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+
+    .detail-body {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .detail-title {
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    .detail-meta {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .badge {
+      background: rgba(255,255,255,0.1);
+      padding: 2px 6px;
+      border-radius: 3px;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .ratings {
+      display: flex;
+      gap: 16px;
+      font-size: 0.9rem;
+      margin: 4px 0;
+    }
+
+    .rating-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .rating-score {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: #fff;
+      color: #000;
+      font-weight: 700;
+      font-size: 1rem;
+      padding: 12px 24px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      width: fit-content;
+      margin: 10px 0;
+      transition: background 0.2s;
+    }
+
+    .action-btn:hover { background: #e6e6e6; }
+
+    .synopsis {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      color: #d2d2d2;
+    }
+
+    .credits {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .credits span { color: #fff; }
+
+    /* Fullscreen Video Player Screen */
+    .player-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: #000;
+      z-index: 200;
+    }
+    .player-overlay.active { display: block; }
 
     video { width: 100%; height: 100%; outline: none; }
-
-    .close {
+    
+    .player-close {
       position: absolute;
-      top: -40px; right: 0;
-      font-size: 2rem;
-      color: var(--text);
+      top: 20px; left: 20px;
+      font-size: 1.5rem;
+      color: #fff;
       cursor: pointer;
-      opacity: 0.8;
+      z-index: 201;
+      background: rgba(0,0,0,0.5);
+      padding: 8px 16px;
+      border-radius: 4px;
     }
-
-    .close:hover { opacity: 1; }
   </style>
 </head>
 <body>
 
   <header>
     <div class="logo">DRIVEFLIX</div>
-    <div class="search-box">
-      <input type="text" id="search-input" class="search-input" placeholder="Search titles..." oninput="handleSearch()" />
-    </div>
+    <input type="text" id="search-input" class="search-input" placeholder="Search titles..." oninput="handleSearch()" />
   </header>
 
   <main>
     <div class="grid" id="grid">
-      <div class="status">Loading titles...</div>
+      <div class="status">Loading library...</div>
     </div>
   </main>
 
-  <div class="modal" id="modal">
-    <div class="modal-box">
-      <span class="close" onclick="closePlayer()">&times;</span>
-      <video id="player" controls autoplay></video>
+  <!-- Netflix / HBO Style Detail Modal -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="detail-card">
+      <span class="close-btn" onclick="closeDetailModal()">&times;</span>
+      <div class="detail-hero">
+        <img id="modal-poster" class="detail-poster" src="" alt="Poster" />
+        <div class="detail-body">
+          <div id="modal-title" class="detail-title">Title</div>
+          <div class="detail-meta">
+            <span id="modal-year">2025</span>
+            <span id="modal-rated" class="badge">PG-13</span>
+            <span id="modal-runtime">120 min</span>
+          </div>
+          <div class="ratings">
+            <div class="rating-item">IMDb: <span id="modal-imdb" class="rating-score">N/A</span></div>
+            <div class="rating-item">Rotten Tomatoes: <span id="modal-rt" class="rating-score">N/A</span></div>
+          </div>
+          <button id="modal-play-btn" class="action-btn">▶ Play Movie</button>
+          <div id="modal-plot" class="synopsis">Movie plot outline...</div>
+          <div class="credits">
+            <div>Director: <span id="modal-director">N/A</span></div>
+            <div>Starring: <span id="modal-cast">N/A</span></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 
+  <!-- Video Player -->
+  <div class="player-overlay" id="player-modal">
+    <span class="player-close" onclick="closePlayer()">✕ Back</span>
+    <video id="video-player" controls></video>
+  </div>
+
   <script>
-    const API_KEY = "AIzaSyD1lUnWikkKMZ2TSs6WIeQDtTSladOFBhs";
+    // Configuration Keys
+     const API_KEY = "AIzaSyD1lUnWikkKMZ2TSs6WIeQDtTSladOFBhs";
     const FOLDER_ID = "17obTR3RAAeF4nLTNWpIKb_bpxfQCUvRc";
+    const OMDB_API_KEY = "trilogy"; // Public OMDb demo API key (Replace with your own key if quota limits)
 
     let moviesStore = [];
+    let currentActiveMovie = null;
 
-    // Clean filenames (e.g., "Inception.2010.1080p.WEBRip.x264.mp4" -> "Inception 2010")
-    function cleanTitle(rawName) {
-      let name = rawName.replace(/\.[^/.]+$/, ""); // Strip file extension
-      name = name.replace(/[\._]/g, " ");          // Replace dots & underscores with spaces
-      // Remove common release/quality tags
-      name = name.replace(/\b(1080p|720p|4k|2160p|hdr|web-?dl|webrip|hdrip|bluray|x264|x265|hevc|aac|yts|rarbg)\b/gi, "");
-      name = name.replace(/\[.*?\]|\(.*?\)/g, ""); // Strip bracketed tags
-      return name.trim();
+    // Advanced Parser: Extracts exact title & year from filenames like:
+    // "A.Big.Bold.Beautiful.Journey.2025.2160p.4K.WEB.x265.10bit.AAC5.1-[YTS.MX].mkv"
+    function parseFilename(rawName) {
+      let clean = rawName.replace(/\.[^/.]+$/, ""); // Strip file extension
+      
+      // Look for a 4-digit year pattern (e.g. 19xx or 20xx)
+      const yearMatch = clean.match(/\b(19\d\d|20\d\d)\b/);
+      let year = yearMatch ? yearMatch[0] : "";
+
+      if (yearMatch) {
+        // Cut everything off after the year
+        clean = clean.substring(0, yearMatch.index);
+      } else {
+        // Strip common tags if year is missing
+        clean = clean.replace(/\b(1080p|720p|4k|2160p|hdr|web-?dl|webrip|hdrip|bluray|x264|x265|hevc|aac|yts|rarbg)\b/gi, "");
+      }
+
+      clean = clean.replace(/[\._]/g, " ").replace(/\[.*?\]|\(.*?\)/g, "").trim();
+      return { searchTitle: clean, year: year };
     }
 
-    // Fetch poster artwork asynchronously from iTunes API (No API key required)
-    async function fetchPoster(title) {
+    // Scrape complete movie metadata from OMDb API
+    async function fetchOMDbMetadata(searchTitle, year) {
       try {
-        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(title)}&entity=movie&limit=1`);
+        const query = `https://www.omdbapi.com/?apikey=${OMDB_API_KEY}&t=${encodeURIComponent(searchTitle)}&y=${year}`;
+        const res = await fetch(query);
         const data = await res.json();
-        if (data.results && data.results.length > 0) {
-          // Replace thumbnail dimensions with 600x600 for crisp high-res poster
-          return data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
+        if (data.Response === "True") {
+          const rtRating = data.Ratings ? data.Ratings.find(r => r.Source === "Rotten Tomatoes") : null;
+          return {
+            title: data.Title,
+            year: data.Year,
+            poster: data.Poster !== "N/A" ? data.Poster : null,
+            plot: data.Plot,
+            director: data.Director,
+            cast: data.Actors,
+            rated: data.Rated,
+            runtime: data.Runtime,
+            imdb: data.imdbRating,
+            rt: rtRating ? rtRating.Value : "N/A"
+          };
         }
       } catch (e) {
-        console.warn("Poster search skipped for:", title);
+        console.warn("OMDb lookup failed for:", searchTitle);
       }
       return null;
     }
@@ -221,31 +396,34 @@
         const data = await res.json();
 
         if (!data.files || data.files.length === 0) {
-          grid.innerHTML = `<div class="status">No files found in folder.</div>`;
+          grid.innerHTML = `<div class="status">No media files found in folder.</div>`;
           return;
         }
 
-        // Store clean titles and file metadata
         moviesStore = data.files
           .filter(file => file.mimeType !== 'application/vnd.google-apps.folder')
-          .map(file => ({
-            id: file.id,
-            rawName: file.name,
-            cleanTitle: cleanTitle(file.name),
-            posterUrl: null
-          }));
+          .map(file => {
+            const parsed = parseFilename(file.name);
+            return {
+              id: file.id,
+              rawName: file.name,
+              searchTitle: parsed.searchTitle,
+              year: parsed.year,
+              meta: null
+            };
+          });
 
         renderGrid(moviesStore);
-        loadPostersInBackground();
+        loadMetadataInBackground();
       } catch (e) {
-        grid.innerHTML = `<div class="status">Failed to load media. Check API Key and folder sharing settings.</div>`;
+        grid.innerHTML = `<div class="status">Failed to load media library. Verify Drive settings.</div>`;
       }
     }
 
     function renderGrid(movies) {
       const grid = document.getElementById('grid');
       if (movies.length === 0) {
-        grid.innerHTML = `<div class="status">No matching titles found.</div>`;
+        grid.innerHTML = `<div class="status">No matching movies found.</div>`;
         return;
       }
 
@@ -253,64 +431,132 @@
       movies.forEach(movie => {
         const card = document.createElement('div');
         card.className = 'card';
-        card.onclick = () => playVideo(movie.id);
+        card.onclick = () => openDetailModal(movie);
 
-        const imgTag = movie.posterUrl 
-          ? `<img class="poster-img" src="${movie.posterUrl}" alt="${movie.cleanTitle}" />`
+        const displayTitle = movie.meta ? movie.meta.title : movie.searchTitle;
+        const displayYear = movie.meta ? movie.meta.year : movie.year;
+        const posterSrc = movie.meta && movie.meta.poster ? movie.meta.poster : '';
+
+        const imgTag = posterSrc 
+          ? `<img class="poster-img" src="${posterSrc}" alt="${displayTitle}" />`
           : `<div class="poster-img"></div>`;
 
         card.innerHTML = `
           ${imgTag}
-          <div class="card-overlay">
-            <div class="card-title">${movie.cleanTitle}</div>
+          <div class="card-info">
+            <div class="card-title">${displayTitle}</div>
+            <div class="card-year">${displayYear}</div>
           </div>
         `;
         grid.appendChild(card);
       });
     }
 
-    // Scrape thumbnails in the background without blocking render
-    async function loadPostersInBackground() {
+    async function loadMetadataInBackground() {
       for (let movie of moviesStore) {
-        const poster = await fetchPoster(movie.cleanTitle);
-        if (poster) {
-          movie.posterUrl = poster;
-          // Refresh active view if searching or displaying grid
+        const meta = await fetchOMDbMetadata(movie.searchTitle, movie.year);
+        if (meta) {
+          movie.meta = meta;
           const searchVal = document.getElementById('search-input').value.toLowerCase();
-          if (!searchVal || movie.cleanTitle.toLowerCase().includes(searchVal)) {
-            renderGrid(moviesStore.filter(m => m.cleanTitle.toLowerCase().includes(searchVal)));
+          if (!searchVal || movie.searchTitle.toLowerCase().includes(searchVal)) {
+            renderGrid(moviesStore.filter(m => m.searchTitle.toLowerCase().includes(searchVal)));
           }
         }
       }
     }
 
-    // Real-time Search Filter
+    function openDetailModal(movie) {
+      currentActiveMovie = movie;
+      const meta = movie.meta || {};
+
+      document.getElementById('modal-title').innerText = meta.title || movie.searchTitle;
+      document.getElementById('modal-year').innerText = meta.year || movie.year || "N/A";
+      document.getElementById('modal-rated').innerText = meta.rated || "NR";
+      document.getElementById('modal-runtime').innerText = meta.runtime || "";
+      document.getElementById('modal-imdb').innerText = meta.imdb || "N/A";
+      document.getElementById('modal-rt').innerText = meta.rt || "N/A";
+      document.getElementById('modal-plot').innerText = meta.plot || "No synopsis available.";
+      document.getElementById('modal-director').innerText = meta.director || "N/A";
+      document.getElementById('modal-cast').innerText = meta.cast || "N/A";
+
+      const posterElem = document.getElementById('modal-poster');
+      if (meta.poster) {
+        posterElem.src = meta.poster;
+        posterElem.style.display = 'block';
+      } else {
+        posterElem.style.display = 'none';
+      }
+
+      // Check device local storage for saved playback position
+      const savedTime = localStorage.getItem(`playback_pos_${movie.id}`);
+      const playBtn = document.getElementById('modal-play-btn');
+
+      if (savedTime && parseFloat(savedTime) > 5) {
+        const mins = Math.floor(parseFloat(savedTime) / 60);
+        playBtn.innerText = `▶ Resume Play (${mins}m)`;
+      } else {
+        playBtn.innerText = `▶ Play Movie`;
+      }
+
+      playBtn.onclick = () => playMovie(movie.id, savedTime ? parseFloat(savedTime) : 0);
+      document.getElementById('detail-modal').classList.add('active');
+    }
+
+    function closeDetailModal() {
+      document.getElementById('detail-modal').classList.remove('active');
+    }
+
+    function playMovie(fileId, startTime) {
+      closeDetailModal();
+      const playerModal = document.getElementById('player-modal');
+      const player = document.getElementById('video-player');
+
+      player.src = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}`;
+      playerModal.classList.add('active');
+
+      player.onloadedmetadata = () => {
+        if (startTime > 0) {
+          player.currentTime = startTime;
+        }
+        player.play();
+      };
+
+      // Periodically store current playback time into LocalStorage
+      player.ontimeupdate = () => {
+        if (player.currentTime > 5) {
+          localStorage.setItem(`playback_pos_${fileId}`, player.currentTime);
+        }
+      };
+    }
+
+    function closePlayer() {
+      const playerModal = document.getElementById('player-modal');
+      const player = document.getElementById('video-player');
+      
+      // Save exact spot before pausing/closing
+      if (currentActiveMovie && player.currentTime > 5) {
+        localStorage.setItem(`playback_pos_${currentActiveMovie.id}`, player.currentTime);
+      }
+
+      player.pause();
+      player.src = "";
+      playerModal.classList.remove('active');
+    }
+
     function handleSearch() {
-      const searchTerm = document.getElementById('search-input').value.toLowerCase();
-      const filtered = moviesStore.filter(movie => 
-        movie.cleanTitle.toLowerCase().includes(searchTerm) ||
-        movie.rawName.toLowerCase().includes(searchTerm)
+      const term = document.getElementById('search-input').value.toLowerCase();
+      const filtered = moviesStore.filter(m => 
+        m.searchTitle.toLowerCase().includes(term) ||
+        (m.meta && m.meta.title.toLowerCase().includes(term))
       );
       renderGrid(filtered);
     }
 
-    function playVideo(id) {
-      const modal = document.getElementById('modal');
-      const player = document.getElementById('player');
-      player.src = `https://www.googleapis.com/drive/v3/files/${id}?alt=media&key=${API_KEY}`;
-      modal.classList.add('active');
-    }
-
-    function closePlayer() {
-      const modal = document.getElementById('modal');
-      const player = document.getElementById('player');
-      player.pause();
-      player.src = "";
-      modal.classList.remove('active');
-    }
-
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closePlayer();
+      if (e.key === 'Escape') {
+        closeDetailModal();
+        closePlayer();
+      }
     });
 
     loadDriveFlix();
