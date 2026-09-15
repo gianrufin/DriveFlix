@@ -23,7 +23,7 @@
       overflow-x: hidden;
     }
 
-    /* Header */
+    /* Header & Navigation */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -136,8 +136,6 @@
       position: absolute; top: 20px; left: 20px; font-size: 1.2rem; color: #fff;
       cursor: pointer; z-index: 201; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 4px;
     }
-    video { width: 100%; height: 100%; outline: none; }
-    ::cue { background: rgba(0,0,0,0.8); color: #fff; font-size: 1rem; }
   </style>
 </head>
 <body>
@@ -258,8 +256,6 @@
 
     async function loadDriveFlix() {
       const container = document.getElementById('categories-container');
-      
-      // Step 1: List items in root folder (checking for subfolders and direct files)
       const rootUrl = `https://www.googleapis.com/drive/v3/files?q='${FOLDER_ID}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${API_KEY}`;
 
       try {
@@ -275,20 +271,16 @@
 
         for (const item of data.files) {
           if (item.mimeType === 'application/vnd.google-apps.folder') {
-            // Step 2: Query files inside each subfolder for video & subtitle files
             const subUrl = `https://www.googleapis.com/drive/v3/files?q='${item.id}'+in+parents+and+trashed=false&fields=files(id,name,mimeType)&key=${API_KEY}`;
             const subRes = await fetch(subUrl);
             const subData = await subRes.json();
 
             let videoFile = null;
-            let subFile = null;
 
             if (subData.files) {
               subData.files.forEach(f => {
                 if (f.mimeType.startsWith('video/') || f.name.match(/\.(mp4|mkv|webm|avi|mov)$/i)) {
                   videoFile = f;
-                } else if (f.name.match(/\.(srt|vtt)$/i)) {
-                  subFile = f;
                 }
               });
             }
@@ -297,7 +289,6 @@
               const parsed = parseFilename(item.name !== "" ? item.name : videoFile.name);
               moviesList.push({
                 id: videoFile.id,
-                subId: subFile ? subFile.id : null,
                 rawName: item.name,
                 searchTitle: parsed.searchTitle,
                 year: parsed.year,
@@ -305,11 +296,9 @@
               });
             }
           } else if (item.mimeType.startsWith('video/') || item.name.match(/\.(mp4|mkv|webm|avi|mov)$/i)) {
-            // Direct video file in root folder
             const parsed = parseFilename(item.name);
             moviesList.push({
               id: item.id,
-              subId: null,
               rawName: item.name,
               searchTitle: parsed.searchTitle,
               year: parsed.year,
@@ -467,23 +456,19 @@
 
     function closeDetailModal() { document.getElementById('detail-modal').classList.remove('active'); }
 
+    // Google Drive Preview Embed (Bypasses CORS policy blocking)
     function playMovie(movie) {
       closeDetailModal();
       const playerModal = document.getElementById('player-modal');
-      const videoSrc = `https://www.googleapis.com/drive/v3/files/${movie.id}?alt=media&key=${API_KEY}`;
-      
-      let trackTag = "";
-      if (movie.subId) {
-        const subSrc = `https://www.googleapis.com/drive/v3/files/${movie.subId}?alt=media&key=${API_KEY}`;
-        trackTag = `<track label="English" kind="subtitles" srclang="en" src="${subSrc}" default>`;
-      }
       
       playerModal.innerHTML = `
         <span class="player-close" onclick="closePlayer()">✕ Back</span>
-        <video controls autoplay crossorigin="anonymous">
-          <source src="${videoSrc}" type="video/mp4">
-          ${trackTag}
-        </video>
+        <iframe src="https://drive.google.com/file/d/${movie.id}/preview" 
+                width="100%" 
+                height="100%" 
+                allow="autoplay" 
+                style="border:none;">
+        </iframe>
       `;
       playerModal.classList.add('active');
     }
