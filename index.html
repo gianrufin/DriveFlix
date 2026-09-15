@@ -21,6 +21,7 @@
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
 
+    /* Header & Search Bar */
     header {
       position: fixed;
       top: 0; left: 0; right: 0;
@@ -28,7 +29,8 @@
       padding: 0 4%;
       display: flex;
       align-items: center;
-      background: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+      justify-content: space-between;
+      background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
       z-index: 10;
     }
 
@@ -41,36 +43,79 @@
       user-select: none;
     }
 
+    .search-box {
+      position: relative;
+    }
+
+    .search-input {
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-size: 0.9rem;
+      outline: none;
+      width: 220px;
+      transition: width 0.3s ease, border-color 0.3s ease;
+    }
+
+    .search-input:focus {
+      width: 300px;
+      border-color: #fff;
+      background: rgba(0, 0, 0, 0.9);
+    }
+
     main { padding: 100px 4% 60px; }
 
+    /* Grid & Poster Cards */
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 14px;
+      gap: 16px;
     }
 
     .card {
       background: var(--card-bg);
       border-radius: 4px;
       aspect-ratio: 2 / 3;
-      display: flex;
-      align-items: flex-end;
-      padding: 16px;
+      position: relative;
+      overflow: hidden;
       cursor: pointer;
-      transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+      transition: transform 0.25s cubic-bezier(0.33, 1, 0.68, 1);
       border: 1px solid rgba(255, 255, 255, 0.05);
     }
 
     .card:hover {
-      transform: scale(1.04);
-      box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+      transform: scale(1.05);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.8);
+      z-index: 2;
     }
 
-    .title {
-      font-size: 0.95rem;
+    .poster-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      background: #2a2a2a;
+    }
+
+    .card-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.2) 60%, transparent 100%);
+      display: flex;
+      align-items: flex-end;
+      padding: 14px;
+      opacity: 0.9;
+      transition: opacity 0.2s ease;
+    }
+
+    .card-title {
+      font-size: 0.9rem;
       font-weight: 700;
       line-height: 1.2;
-      word-break: break-word;
+      color: #fff;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.8);
     }
 
     .status {
@@ -79,6 +124,7 @@
       padding: 40px 0;
     }
 
+    /* Video Player Modal */
     .modal {
       display: none;
       position: fixed;
@@ -117,6 +163,9 @@
 
   <header>
     <div class="logo">DRIVEFLIX</div>
+    <div class="search-box">
+      <input type="text" id="search-input" class="search-input" placeholder="Search titles..." oninput="handleSearch()" />
+    </div>
   </header>
 
   <main>
@@ -133,9 +182,35 @@
   </div>
 
   <script>
-    // Replace these two strings with your values
-    const API_KEY = "AIzaSyD1lUnWikkKMZ2TSs6WIeQDtTSladOFBhs";
-    const FOLDER_ID = "17obTR3RAAeF4nLTNWpIKb_bpxfQCUvRc";
+    const API_KEY = "YOUR_GOOGLE_DRIVE_API_KEY";
+    const FOLDER_ID = "YOUR_GOOGLE_DRIVE_FOLDER_ID";
+
+    let moviesStore = [];
+
+    // Clean filenames (e.g., "Inception.2010.1080p.WEBRip.x264.mp4" -> "Inception 2010")
+    function cleanTitle(rawName) {
+      let name = rawName.replace(/\.[^/.]+$/, ""); // Strip file extension
+      name = name.replace(/[\._]/g, " ");          // Replace dots & underscores with spaces
+      // Remove common release/quality tags
+      name = name.replace(/\b(1080p|720p|4k|2160p|hdr|web-?dl|webrip|hdrip|bluray|x264|x265|hevc|aac|yts|rarbg)\b/gi, "");
+      name = name.replace(/\[.*?\]|\(.*?\)/g, ""); // Strip bracketed tags
+      return name.trim();
+    }
+
+    // Fetch poster artwork asynchronously from iTunes API (No API key required)
+    async function fetchPoster(title) {
+      try {
+        const res = await fetch(`https://itunes.apple.com/search?term=${encodeURIComponent(title)}&entity=movie&limit=1`);
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+          // Replace thumbnail dimensions with 600x600 for crisp high-res poster
+          return data.results[0].artworkUrl100.replace('100x100bb', '600x600bb');
+        }
+      } catch (e) {
+        console.warn("Poster search skipped for:", title);
+      }
+      return null;
+    }
 
     async function loadDriveFlix() {
       const grid = document.getElementById('grid');
@@ -150,21 +225,73 @@
           return;
         }
 
-        grid.innerHTML = "";
-        data.files.forEach(file => {
-          if (file.mimeType !== 'application/vnd.google-apps.folder') {
-            const card = document.createElement('div');
-            card.className = 'card';
-            card.onclick = () => playVideo(file.id);
+        // Store clean titles and file metadata
+        moviesStore = data.files
+          .filter(file => file.mimeType !== 'application/vnd.google-apps.folder')
+          .map(file => ({
+            id: file.id,
+            rawName: file.name,
+            cleanTitle: cleanTitle(file.name),
+            posterUrl: null
+          }));
 
-            const title = file.name.replace(/\.[^/.]+$/, "");
-            card.innerHTML = `<div class="title">${title}</div>`;
-            grid.appendChild(card);
-          }
-        });
+        renderGrid(moviesStore);
+        loadPostersInBackground();
       } catch (e) {
         grid.innerHTML = `<div class="status">Failed to load media. Check API Key and folder sharing settings.</div>`;
       }
+    }
+
+    function renderGrid(movies) {
+      const grid = document.getElementById('grid');
+      if (movies.length === 0) {
+        grid.innerHTML = `<div class="status">No matching titles found.</div>`;
+        return;
+      }
+
+      grid.innerHTML = "";
+      movies.forEach(movie => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.onclick = () => playVideo(movie.id);
+
+        const imgTag = movie.posterUrl 
+          ? `<img class="poster-img" src="${movie.posterUrl}" alt="${movie.cleanTitle}" />`
+          : `<div class="poster-img"></div>`;
+
+        card.innerHTML = `
+          ${imgTag}
+          <div class="card-overlay">
+            <div class="card-title">${movie.cleanTitle}</div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Scrape thumbnails in the background without blocking render
+    async function loadPostersInBackground() {
+      for (let movie of moviesStore) {
+        const poster = await fetchPoster(movie.cleanTitle);
+        if (poster) {
+          movie.posterUrl = poster;
+          // Refresh active view if searching or displaying grid
+          const searchVal = document.getElementById('search-input').value.toLowerCase();
+          if (!searchVal || movie.cleanTitle.toLowerCase().includes(searchVal)) {
+            renderGrid(moviesStore.filter(m => m.cleanTitle.toLowerCase().includes(searchVal)));
+          }
+        }
+      }
+    }
+
+    // Real-time Search Filter
+    function handleSearch() {
+      const searchTerm = document.getElementById('search-input').value.toLowerCase();
+      const filtered = moviesStore.filter(movie => 
+        movie.cleanTitle.toLowerCase().includes(searchTerm) ||
+        movie.rawName.toLowerCase().includes(searchTerm)
+      );
+      renderGrid(filtered);
     }
 
     function playVideo(id) {
