@@ -569,20 +569,17 @@
 
     // Embed Google Drive preview player (solves MKV & audio codec issues natively)
     function playMovie(fileId) {
-      closeDetailModal();
-      const playerModal = document.getElementById('player-modal');
-      
-      playerModal.innerHTML = `
-        <span class="player-close" onclick="closePlayer()">✕ Back</span>
-        <iframe src="https://drive.google.com/file/d/${fileId}/preview" 
-                width="100%" 
-                height="100%" 
-                allow="autoplay" 
-                style="border:none;">
-        </iframe>
-      `;
-      playerModal.classList.add('active');
-    }
+  closeDetailModal();
+  const playerModal = document.getElementById('player-modal');
+
+  playerModal.innerHTML = `
+    <span class="player-close" onclick="closePlayer()">✕ Back</span>
+    <video controls autoplay style="width:100%; height:100%;">
+      <source src="https://www.googleapis.com/drive/v3/files/${fileId}?alt=media&key=${API_KEY}" type="video/mp4">
+    </video>
+  `;
+  playerModal.classList.add('active');
+}
 
     function closePlayer() {
       const playerModal = document.getElementById('player-modal');
