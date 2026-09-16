@@ -210,9 +210,8 @@
   <div class="player-overlay" id="player-modal"></div>
 
   <script>
-     const API_KEY = "AIzaSyD1lUnWikkKMZ2TSs6WIeQDtTSladOFBhs";
-
-    const FOLDER_ID = "17obTR3RAAeF4nLTNWpIKb_bpxfQCUvRc";
+    const API_KEY = "YOUR_GOOGLE_DRIVE_API_KEY";
+    const FOLDER_ID = "YOUR_GOOGLE_DRIVE_FOLDER_ID";
     const OMDB_API_KEY = "trilogy";
 
     const MANUAL_OVERRIDES = {
@@ -461,35 +460,63 @@
         posterElem.style.display = 'none';
       }
 
+      // Check device local storage for saved timestamp
+      const savedTime = localStorage.getItem(`playback_pos_${movie.id}`);
       const playBtn = document.getElementById('modal-play-btn');
-      playBtn.innerText = `▶ Play`;
-      playBtn.onclick = () => playMovie(movie);
 
+      if (savedTime && parseFloat(savedTime) > 5) {
+        const mins = Math.floor(parseFloat(savedTime) / 60);
+        playBtn.innerText = `▶ Resume Play (${mins}m)`;
+      } else {
+        playBtn.innerText = `▶ Play`;
+      }
+
+      playBtn.onclick = () => playMovie(movie, savedTime ? parseFloat(savedTime) : 0);
       document.getElementById('detail-modal').classList.add('active');
     }
 
     function closeDetailModal() { document.getElementById('detail-modal').classList.remove('active'); }
 
-    // Direct proxy stream player bypassing Google processing/CORS blockades
-    function playMovie(movie) {
+    function playMovie(movie, startTime) {
       closeDetailModal();
       const playerModal = document.getElementById('player-modal');
       
-      // Route Google Drive file stream through CORS proxy stream endpoint
       const proxyStreamUrl = `https://corsproxy.io/?${encodeURIComponent('https://www.googleapis.com/drive/v3/files/' + movie.id + '?alt=media&key=' + API_KEY)}`;
       
       playerModal.innerHTML = `
         <span class="player-close" onclick="closePlayer()">✕ Back</span>
-        <video controls autoplay style="width:100%; height:100%;">
+        <video id="active-video-player" controls autoplay style="width:100%; height:100%;">
           <source src="${proxyStreamUrl}" type="video/mp4">
           <source src="https://www.googleapis.com/drive/v3/files/${movie.id}?alt=media&key=${API_KEY}" type="video/mp4">
         </video>
       `;
       playerModal.classList.add('active');
+
+      const videoPlayer = document.getElementById('active-video-player');
+
+      // Seek to saved resume position once video metadata loads
+      videoPlayer.onloadedmetadata = () => {
+        if (startTime > 0) {
+          videoPlayer.currentTime = startTime;
+        }
+      };
+
+      // Save watch progress to LocalStorage periodically
+      videoPlayer.ontimeupdate = () => {
+        if (videoPlayer.currentTime > 5) {
+          localStorage.setItem(`playback_pos_${movie.id}`, videoPlayer.currentTime);
+        }
+      };
     }
 
     function closePlayer() {
       const playerModal = document.getElementById('player-modal');
+      const videoPlayer = document.getElementById('active-video-player');
+
+      if (currentActiveMovie && videoPlayer && videoPlayer.currentTime > 5) {
+        localStorage.setItem(`playback_pos_${currentActiveMovie.id}`, videoPlayer.currentTime);
+      }
+
       playerModal.innerHTML = "";
       playerModal.classList.remove('active');
     }
